@@ -1,6 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import codecs
+import csv
 import string
 
 new = ""
@@ -34,4 +36,25 @@ fight_urls.to_csv('fighter urls.csv', index=False)
 for s in fighter_urls:
     f.write(s + "\n")
 
+print("file finished writing\n")
 f.close()
+
+f = open('fighters.txt', 'r')
+
+url = "None"
+for line in f:
+    url = line.rstrip('\n')
+    #print(line)
+    r = requests.get(url)
+    soup = BeautifulSoup(r.content, "html5lib")
+
+    fighter_name = soup.find('span', {'class': 'b-content__title-highlight'}).contents[0]
+    fighter_name = fighter_name.strip()
+    print(fighter_name)
+
+    fighter_record = soup.find('span', {'class': 'b-content__title-record'}).contents[0]
+    fighter_record = fighter_record.strip()
+    fighter_record = fighter_record.strip('Record: ')
+    print(fighter_record)
+
+
