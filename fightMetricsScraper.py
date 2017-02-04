@@ -22,7 +22,7 @@ csv_file = csv.writer(cf)
 
 headers = ['Name', 'Nickname', 'Record', 'Height', 'Weight (lbs)', 'Reach', 'Stance', 'Birth Date', 'Sig. Strikes landed/min', 'strike acc.', 'Sig Strikes taken/min', 'Strike def.', 'TD/15 min', 'TD acc.', 'TD def.', 'sub/15 min']
 csv_file.writerow(headers)
-cf.close()
+#cf.close()
 
 fighter_urls = []
 
@@ -48,7 +48,7 @@ fight_urls.to_csv('fighter urls.csv', index=False)
 for s in fighter_urls:
     f.write(s + "\n")
 
-print("file finished writing\n")
+#print("file finished writing\n")
 f.close()
 
 f = open('fighters.txt', 'r')
@@ -60,9 +60,13 @@ for line in f:
     r = requests.get(url)
     soup = BeautifulSoup(r.content, "html5lib")
 
-    fighter_name = soup.find('span', {'class': 'b-content__title-highlight'}).contents[0]
-    fighter_name = fighter_name.strip()
-    #print(fighter_name)
+    try:
+        fighter_name = soup.find('span', {'class': 'b-content__title-highlight'}).contents[0]
+        fighter_name = fighter_name.strip()
+    except AttributeError:
+        fighter_name = None
+        print("ERROR - NO fighter at " + url)
+        continue
 
     try:
         nickname = soup.find('p', {'class': 'b-content__Nickname'}).contents[0]
@@ -71,11 +75,12 @@ for line in f:
         nickname = None
     else:
         check(nickname)
-    #print(nickname)
 
-    fighter_record = soup.find('span', {'class': 'b-content__title-record'}).contents[0]
-    fighter_record = fighter_record.strip().strip('Record: ')
-    #print(fighter_record)
+    try:
+        fighter_record = soup.find('span', {'class': 'b-content__title-record'}).contents[0]
+        fighter_record = fighter_record.strip().strip('Record: ')
+    except AttributeError:
+        fighter_record = None
 
     stats = []
     for li in soup.find_all('li', {'class': 'b-list__box-list-item b-list__box-list-item_type_block'}):
@@ -174,7 +179,7 @@ for line in f:
     fighter_tddef = check(fighter_tddef)
     fighter_subavg = check(fighter_subavg)
 
-    print(fighter_name)
+    """print(fighter_name)
     print(nickname)
     print(fighter_record)
     print(fighter_height)
@@ -189,10 +194,35 @@ for line in f:
     print(fighter_tdavg)
     print(fighter_tdacc)
     print(fighter_tddef)
-    print(fighter_subavg)
+    print(fighter_subavg)"""
 
+    row = [fighter_name,
+           nickname,
+           fighter_record,
+           fighter_height,
+           fighter_weight,
+           fighter_reach,
+           fighter_stance,
+           fighter_dob,
+           fighter_slpm,
+           fighter_stracc,
+           fighter_sapm,
+           fighter_strdef,
+           fighter_tdavg,
+           fighter_tdacc,
+           fighter_tddef,
+           fighter_subavg]
 
+    csv_file.writerow(row)
+    print(fighter_name)
 
-
-
+try:
+    cf.close()
+except:
+    print("ERROR - Can't close csv file - " + cf)
+try:
+    f.close()
+except:
+    print("ERROR - Can't close txt file - " + f)
+print("Done!")
 
