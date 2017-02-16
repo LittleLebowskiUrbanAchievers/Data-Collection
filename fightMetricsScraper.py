@@ -7,7 +7,7 @@ import datetime
 import string
 
 def check(stat):
-    if stat == "" or stat == " " or stat == "--" or stat == "\n":
+    if stat == "" or stat == " " or stat == "--" or stat == "-" or stat == "\n":
         stat = None
     return stat
 
@@ -20,7 +20,7 @@ f = open('fighters.txt', 'w')
 cf = open('FightMetricStats.csv', 'w')
 csv_file = csv.writer(cf)
 
-headers = ['Name', 'Nickname', 'Record', 'Height (in.)', 'Weight (lbs)', 'Reach (in.)', 'Stance', 'Birth Date', 'Sig. Strikes landed/min', 'strike acc. (%)', 'Sig Strikes taken/min', 'Strike def. (%)', 'TD/15 min', 'TD acc. (%)', 'TD def. (%)', 'sub/15 min']
+headers = ['Name', 'Nickname', 'Wins', 'Losses', 'Draws', 'No Contests', 'Height (in.)', 'Weight (lbs)', 'Reach (in.)', 'Stance', 'Birth Date', 'Sig. Strikes landed/min', 'strike acc. (%)', 'Sig Strikes taken/min', 'Strike def. (%)', 'TD/15 min', 'TD acc. (%)', 'TD def. (%)', 'sub/15 min']
 csv_file.writerow(headers)
 #cf.close()
 
@@ -79,6 +79,17 @@ for line in f:
     try:
         fighter_record = soup.find('span', {'class': 'b-content__title-record'}).contents[0]
         fighter_record = fighter_record.strip().strip('Record: ')
+        try:
+            wins,losses,draws = fighter_record.split('-')
+        except:
+            pass
+        try:
+            ties,nc = draws.split('(')
+            ties = ties.strip()
+        except:
+            nc = None
+            ties = draws
+        nc = nc.strip('(').strip('NC)').strip()
     except AttributeError:
         fighter_record = None
 
@@ -172,7 +183,10 @@ for line in f:
 
     fighter_name = check(fighter_name)
     nickname = check(nickname)
-    fighter_record = check(fighter_record)
+    wins = check(wins)
+    losses = check(losses)
+    ties = check(ties)
+    nc = check(nc)
     fighter_height = check(fighter_height)
     fighter_weight = check(fighter_weight)
     fighter_reach = check(fighter_reach)
@@ -206,7 +220,10 @@ for line in f:
 
     row = [fighter_name,
            nickname,
-           fighter_record,
+           wins,
+           losses,
+           ties,
+           nc,
            fighter_height,
            fighter_weight,
            fighter_reach,
