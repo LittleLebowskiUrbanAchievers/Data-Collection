@@ -20,7 +20,7 @@ f = open('fighters.txt', 'w')
 cf = open('FightMetricStats.csv', 'w')
 csv_file = csv.writer(cf)
 
-headers = ['Name', 'Nickname', 'Record', 'Height', 'Weight (lbs)', 'Reach', 'Stance', 'Birth Date', 'Sig. Strikes landed/min', 'strike acc.', 'Sig Strikes taken/min', 'Strike def.', 'TD/15 min', 'TD acc.', 'TD def.', 'sub/15 min']
+headers = ['Name', 'Nickname', 'Record', 'Height (in.)', 'Weight (lbs)', 'Reach (in.)', 'Stance', 'Birth Date', 'Sig. Strikes landed/min', 'strike acc. (%)', 'Sig Strikes taken/min', 'Strike def. (%)', 'TD/15 min', 'TD acc. (%)', 'TD def. (%)', 'sub/15 min']
 csv_file.writerow(headers)
 #cf.close()
 
@@ -91,7 +91,15 @@ for line in f:
     for item in stats:
         if i == 0:
             try:
-                fighter_height = item.strip().strip('Height:').strip()
+                fighter_height = item.strip().strip('Height:').strip().strip('\"')
+                feet = fighter_height[:1]
+                inches = fighter_height[-2:]
+                inches = inches.strip()
+                try:
+                    total_height = int(feet) * 12 + int(inches)
+                    fighter_height = int(total_height)
+                except:
+                    fighter_height = None
             except AttributeError:
                 fighter_height = None
         elif i == 1:
@@ -101,7 +109,7 @@ for line in f:
                 fighter_weight = None
         elif i == 2:
             try:
-                fighter_reach = item.strip().strip('Reach:').strip()
+                fighter_reach = item.strip().strip('Reach:').strip().strip('\"')
             except AttributeError:
                 fighter_reach = None
         elif i == 3:
@@ -126,7 +134,7 @@ for line in f:
                 fighter_slpm = None
         elif i == 6:
             try:
-                fighter_stracc = item.strip().strip('Str. Acc.:').strip()
+                fighter_stracc = item.strip().strip('Str. Acc.:').strip().strip('%')
             except AttributeError:
                 fighter_stracc = None
         elif i == 7:
@@ -136,7 +144,7 @@ for line in f:
                 fighter_sapm = None
         elif i == 8:
             try:
-                fighter_strdef = item.strip().strip('Str. Def:').strip()
+                fighter_strdef = item.strip().strip('Str. Def:').strip().strip('%')
             except AttributeError:
                 fighter_strdef = None
         elif i == 10:
@@ -146,12 +154,12 @@ for line in f:
                 fighter_tdavg = None
         elif i == 11:
             try:
-                fighter_tdacc = item.strip().strip('TD Acc.:').strip()
+                fighter_tdacc = item.strip().strip('TD Acc.:').strip().strip('%')
             except AttributeError:
                 fighter_tdacc = None
         elif i == 12:
             try:
-                fighter_tddef = item.strip().strip('TD Def.:').strip()
+                fighter_tddef = item.strip().strip('TD Def.:').strip().strip('%')
             except AttributeError:
                 fighter_tddef = None
         elif i == 13:
