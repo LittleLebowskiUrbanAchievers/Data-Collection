@@ -15,6 +15,8 @@ new = ""
 old = ""
 letter = 'a'
 alphabet = string.ascii_lowercase
+total = 0
+errors = 0
 
 f = open('fighters.txt', 'w')
 cf = open('FightMetricStats.csv', 'w')
@@ -57,7 +59,13 @@ url = "None"
 for line in f:
     url = line.rstrip('\n')
     #print(line)
-    r = requests.get(url)
+    try:
+        r = requests.get(url, timeout=15)
+    except:
+        errors += 1
+        print("Connection Error with fighter" + total)
+        continue
+
     soup = BeautifulSoup(r.content, "html5lib")
 
     try:
@@ -239,7 +247,10 @@ for line in f:
            fighter_subavg]
 
     csv_file.writerow(row)
+    total += 1
     print(fighter_name)
+    if total % 50 == 0:
+        print(total)
 
 try:
     cf.close()
@@ -250,4 +261,5 @@ try:
 except:
     print("ERROR - Can't close txt file - " + f)
 print("Done!")
+print(total)
 
